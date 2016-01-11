@@ -1,0 +1,97 @@
+---
+title: "Top Swiss movies"
+author: "Duc-Quang Nguyen"
+date: "8 January 2016"
+output: html_document
+---
+
+
+## Load the data
+```{r}
+library("dplyr")
+library("readr")
+library("swiTheme")
+
+data.file <- "input/Classement 25 blockbusters suisses (en Suisse) - Blockbusters suisses.csv"
+data.read <- read_csv(data.file)
+
+
+```
+
+## Test visualisation
+
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(data = data.read, aes(Année, Entrées)) + geom_point(aes(size = Entrées, color = Genre)) + theme_swiYLines() +
+  scale_size(range = c(5,20)) + geom_text(aes(label = Titre), size = 2, check_overlap = T)
+
+```
+
+
+## Interative bubble chart
+
+```{r, echo=FALSE}
+library(swiRcharts)
+
+dd <- data.read %>% select(Titre, `Réalisateur / Réalisatrice`, 
+  Genre, Langue, Année, Entrées, IMDB, Affiche_pic_url, Trailer, Synopsys) %>%
+  rename(x = Année, y = Entrées, z = IMDB, series = Titre, url = Trailer)
+
+## create fancy tooltip as html table
+dd$name <- paste0(
+  '<table cellpadding="1" style="line-height:1.2">', '<div style="font-size:8px">',
+  '<tr><td colspan="3"><b>', dd$series, '</b></td></tr>',
+  '<tr><td colspan="3"><i>', dd$series, '</i></td></tr></div>',
+  '<div style="font-size:6px">',
+  '<tr><td colspan="3"><img src="', dd$Affiche_pic_url, '" width="200"></td></tr>',
+  '<tr><td>', "Réalisateur", '</td><td colspan = 2>', dd$`Réalisateur / Réalisatrice`, '</td></tr>',
+  '<tr><td>', "Année", '</td><td colspan = 2>', dd$x, '</td></tr>',
+  '<tr><td>', "Score IMDB", '</td><td colspan = 2>', dd$z, '</td></tr>',
+  '<tr><td>', "Langue", '</td><td colspan = 2>', dd$Langue, '</td></tr>',
+  '<tr><td>', "Genre", '</td><td colspan = 2>', dd$Genre, '</td></tr>',
+  '<tr><td colspan="3"> </td></tr></div>',
+  '<tr><td colspan="3">', sapply(strwrap(gsub("('|\\n)", " ", dd$Synopsys), 44, simplify = F), 
+    paste, collapse = "<br>"), '</td></tr>', 
+  '</div></table>')
+
+	
+a <- Highcharts$new()
+a$chart(zoomType = "xy", type = 'bubble', height = 600, spacing = 5)
+
+h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name, series = dd$series, url = dd$url), "series")
+a$series(h2)
+
+a$plotOptions(bubble = list(dataLabels = list(enabled = T, 
+  verticalAlign = "middle", allowOverlap = FALSE, padding = 20,
+  style = list(textShadow = 'none', fontSize = "6px"),
+  color = 'black', useHTML = T, formatter = "#! function() { return this.series.name; } !#"),
+  minSize = 5, maxSize = 60,
+  cursor = "pointer",
+    point = list(
+      events = list(
+        click = "#! function() { window.open(this.options.url); } !#"))))
+a$colors(swi_rpal)	
+
+
+# a$legend(borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 5, itemHoverStyle = list(color = '#996666'),
+#   itemStyle = list(fontWeight = "normal", fontSize = "0.8em"),
+#          title = list(style = list(fontWeight ='normal'),
+#         text = paste0(trad['legend.country',lang], 
+#                                     ' <span style="font-size: 9px; color: #666; font-weight: normal">',
+#                                     trad['legend.descr',lang], '</span><br>')), style = list(fontStyle = 'italic'))
+	
+a$yAxis(title = list(text = "Entrées (en milliers)"), gridLineColor = "#EFEFEF",
+		labels = list(formatter = "#! function () {return this.value / 1000;} !#"))
+
+a$tooltip(formatter = "#! function() { return this.point.name; } !#", useHTML = T, 
+  borderWidth = 2, style = list(padding = 1.5))
+a
+
+hChart.html <- tempfile("hChart_cinema")
+a$save(hChart.html)
+
+# Convert highcharts-rCharts html chart into a responsive one
+hChart2responsiveHTML(hChart.html, output.html = "top25_SwissMovies_bubble.html")
+	
+	
+```
