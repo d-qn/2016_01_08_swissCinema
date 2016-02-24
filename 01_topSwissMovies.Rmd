@@ -58,7 +58,8 @@ dd$name <- paste0(
 a <- Highcharts$new()
 a$chart(zoomType = "xy", type = 'bubble', height = 600, spacing = 5)
 
-h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name, series = dd$series, url = dd$url), "series")
+h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name, 
+  series = dd$series, url = dd$url), "series")
 a$series(h2)
 
 a$plotOptions(bubble = list(dataLabels = list(enabled = T, 
