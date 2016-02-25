@@ -102,7 +102,6 @@ txt <- txt[-idx[toDelete],]
       htmlLink(txt['source2.link', lang], txt['source2.label', lang])),
     author = " swissinfo.ch"
     )
-
 #}
 
 
@@ -144,5 +143,19 @@ tpl <- paste0(
 isot <- isotope(ddd, layoutMode = "fitRows", filterCols = "title", sortCols = NULL, lang = 'en', elemTpl = tpl)
 htmlwidgets::saveWidget(isot, "isotope_test.html", selfcontained = F, libdir = "js")
 
-'"filterBtns":"<h3>Filter\u003c/h3><div id=\"select-car\">\u003c/div>",'
+
+## hack !! 
+regex <- '"filterBtns":"<h3>Filter\\u003c/h3><div id=\\"select-car\\">\\u003c/div>",'
+css.file <- list.files(system.file("extdata", package="swiRcharts"), 'isotope_swi.css', full.names = T)
+css <- read_file(css.file)
+
+x <- readLines("isotope_test.html")
+stopifnot(any(grepl(regex, x, fixed = T)))
+y <- gsub(regex, "", x, fixed = TRUE)
+z <- gsub("</head>", paste0(css, "</head>"), y)
+
+cat(z, file = "isotope_test.html", sep="\n")
+
+
+  
 
