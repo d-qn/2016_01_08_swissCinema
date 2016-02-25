@@ -123,28 +123,30 @@ sortCols <- c(txt['year.cat', lang], txt['admissions.cat', lang], "IMDB")
 
 tpl <- paste0(
 '<div style="border: 1px solid lightgrey; margin:4px; padding:4px">
-<div class="container" style="width:300px;">
+<div class="container" style="width:250px;">
 <h3 class="title">{{rank}}. {{title}}</h3>
 <h4>{{Titre}}</h3>
-<div style="height: 180px; margin:auto">
-<img src={{Affiche_pic_url}} class="circle" height="160px"/>
-</div>
-<p>',
-  txt["year.cat", lang], ': ', '{{', txt['year.cat', lang], '}}, ',
-  txt["language.cat", lang], ': {{Langue}}, ',
-  txt['genre.cat', lang], ': {{series}}</p><p>',
-  txt['imdb.cat', lang], ": {{IMDB}}, ",
-  txt["admissions.cat", lang], ": {{entrées}}</p><p>",
-  txt["director.cat", lang], ": {{director}}</p><p>",
+<div style="height: 150px; margin:auto">
+<img src={{Affiche_pic_url}} class="circle" height="140px"/>
+</div><div class="light">
+<p><strong>',
+  txt["year.cat", lang], ': </strong>', '{{', txt['year.cat', lang], '}}<br><strong>',
+  txt["language.cat", lang], ': </strong>{{Langue}}<br><strong>',
+  txt['genre.cat', lang], ': </strong>{{series}}<br><strong>',
+  txt['imdb.cat', lang], ": </strong>{{IMDB}}<br><strong>",
+  txt["admissions.cat", lang], ": </strong>{{entrées}}<br><strong>",
+  txt["director.cat", lang], ": </strong>{{director}}</p></div><p>",
   "{{synopsis}}",
-'</p></div>
+  '</p><p><div class="light">',
+  '<a href="{{url}}" target="_blank">', txt["trailer", lang], '</a>',
+'</p></div></div>
 </div>'
 )
 isot <- isotope(ddd, layoutMode = "fitRows", filterCols = "title", sortCols = NULL, lang = 'en', elemTpl = tpl)
 htmlwidgets::saveWidget(isot, "isotope_test.html", selfcontained = F, libdir = "js")
 
 
-## hack !! 
+## hack !!
 regex <- '"filterBtns":"<h3>Filter\\u003c/h3><div id=\\"select-car\\">\\u003c/div>",'
 css.file <- list.files(system.file("extdata", package="swiRcharts"), 'isotope_swi.css', full.names = T)
 css <- read_file(css.file)
@@ -155,7 +157,3 @@ y <- gsub(regex, "", x, fixed = TRUE)
 z <- gsub("</head>", paste0(css, "</head>"), y)
 
 cat(z, file = "isotope_test.html", sep="\n")
-
-
-  
-
