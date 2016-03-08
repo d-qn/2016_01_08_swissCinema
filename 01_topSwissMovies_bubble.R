@@ -119,9 +119,7 @@ for(lang in colnames(txt)) {
     ddd <- dd
     # rename data.frame with meaningful names
     colnames(ddd)[which(colnames(ddd) == "x")] <- txt['year.cat', lang]
-   # colnames(ddd)[which(colnames(ddd) == "y")] <- txt['admissions.cat', lang]
     colnames(ddd)[which(colnames(ddd) == "z")] <- "IMDB"
-   # colnames(ddd)[which(colnames(ddd) == "note IMDb")] <- 
     colnames(ddd)[which(colnames(ddd) == "Réalisateur / Réalisatrice")] <- "director"
     
     ddd$Langue <- ifelse(ddd$Langue  == "GER", txt["ger.type", lang], txt["fre.type", lang] )
