@@ -5,7 +5,7 @@ library("swiRcharts")
 
 topMovies <- 25
 isotopify <- T
-height <- 700
+height <- 450
 
 ### Load data and translations
 data.file <- "input/Classement 25 blockbusters suisses (en Suisse) - swiss_blockbusters_data.csv"
@@ -82,7 +82,7 @@ for(lang in colnames(txt)) {
       click = "#! function() { window.open(this.options.url); } !#")
     )))
 
-  a$colors(c("#336666", "#366096", "#ab3d3f", "#663333", "#ac673e"))
+  a$colors(c("#3a9736", "#336666", "#333366", "#ab3d3f", "#666633", "#ac673e"))
 
   a$legend(borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 5,
     title = list(style = list(fontWeight ='light'),
@@ -92,7 +92,7 @@ for(lang in colnames(txt)) {
      )
   )
 
-  a$yAxis(max =  10^6, title = list(text = "Entrées (en milliers)"), gridLineColor = "#EFEFEF",
+  a$yAxis(title = list(text = "Entrées (en milliers)"), gridLineColor = "#EFEFEF",
           labels = list(formatter = "#! function () {return this.value / 1000;} !#"))
 
   a$tooltip(formatter = "#! function() { return this.point.name; } !#", useHTML = T,
