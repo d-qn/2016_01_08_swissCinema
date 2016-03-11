@@ -5,7 +5,7 @@ library("swiRcharts")
 
 topMovies <- 25
 isotopify <- T
-height <- 450
+height <- 460
 
 ### Load data and translations
 data.file <- "input/Classement 25 blockbusters suisses (en Suisse) - swiss_blockbusters_data.csv"
@@ -33,7 +33,10 @@ data <- data[1:topMovies, ]
 
 idx <- which(grepl( "synopsis$", rownames(txt)))
 toDelete <- !rownames(txt)[idx] %in% paste0(rownames(data), ".synopsis")
-txt <- txt[-idx[toDelete], , drop = F]
+if(any(toDelete)) {
+  txt <- txt[-idx[toDelete], , drop = F]
+}
+
 
 ## Loop through
 colnames(txt)
@@ -65,17 +68,18 @@ for(lang in colnames(txt)) {
     '</table>')
 
   a <- Highcharts$new()
-  a$chart(zoomType = "xy", type = 'bubble', height = height, spacing = 3)
+  a$chart(zoomType = "xy", type = 'bubble', height = height,
+    spacing = 3, plotBackgroundImage = 'http://interactive.swissinfo.ch/2016_01_12_swissCinema/movie_test.jpg')
 
   h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name,
     series = dd$series, url = dd$url, bname = dd$title), "series")
   a$series(h2)
 
   a$plotOptions(bubble = list(dataLabels = list(enabled = T,
-    verticalAlign = "middle", allowOverlap = FALSE, padding = 20,
+    verticalAlign = "middle", allowOverlap = FALSE, padding = 10,
     style = list(textShadow = 'none', fontSize = "9px"),
     color = 'black', useHTML = T, formatter = "#! function() { return this.point.options.bname; } !#"),
-    minSize = 16, maxSize = 75,
+    minSize = 16, maxSize = 70,
     cursor = "pointer",
     point = list(
      events = list(
@@ -84,16 +88,22 @@ for(lang in colnames(txt)) {
 
   a$colors(c("#3a9736", "#336666", "#333366", "#ab3d3f", "#666633", "#ac673e"))
 
-  a$legend(borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 5,
+  a$legend(borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 4,
     title = list(style = list(fontWeight ='light'),
      text = paste0(txt['genre', lang],
       ' <span style="font-size: 8px; color: #666; font-weight: normal">',
       txt['clickToHide', lang], '</span><br>')
-     )
+     ),
+    rtl = ifelse(lang == 'AR', TRUE, FALSE)
   )
 
-  a$yAxis(title = list(text = "Entrées (en milliers)"), gridLineColor = "#EFEFEF",
-          labels = list(formatter = "#! function () {return this.value / 1000;} !#"))
+  a$yAxis(title = list(text = txt["ylab.label", lang]), gridLineColor = "#EFEFEF",
+    labels = list(formatter = "#! function () {return this.value / 1000;} !#"),
+    gridLineWidth = 0, tickLength = 5, tickWidth = 1,
+    opposite = ifelse(lang == 'AR', TRUE, FALSE))
+
+  a$xAxis( gridLineWidth = 0, tickLength = 5, tickWidth = 1, lineWidth = 0,
+    reversed = ifelse(lang == "AR", TRUE, FALSE ))
 
   a$tooltip(formatter = "#! function() { return this.point.name; } !#", useHTML = T,
             borderWidth = 1, style = list(padding = 2))
@@ -118,10 +128,10 @@ for(lang in colnames(txt)) {
 
     ddd <- dd
     # rename data.frame with meaningful names
-    colnames(ddd)[which(colnames(ddd) == "x")] <- txt['year.cat', lang]
+    #colnames(ddd)[which(colnames(ddd) == "x")] <- txt['year.cat', lang]
     colnames(ddd)[which(colnames(ddd) == "z")] <- "IMDB"
     colnames(ddd)[which(colnames(ddd) == "Réalisateur / Réalisatrice")] <- "director"
-    
+
     ddd$Langue <- ifelse(ddd$Langue  == "GER", txt["ger.type", lang], txt["fre.type", lang] )
     ddd$synopsis <- txt[grep("synopsis$", rownames(txt)), lang]
     ddd$rank <- 1:nrow(ddd)
@@ -138,14 +148,14 @@ for(lang in colnames(txt)) {
       <img src={{Affiche_pic_url}} class="circle" height="140px"/>
       </div><div class="light">
       <p><strong>',
-      txt["year.cat", lang], ': </strong>', '{{', txt['year.cat', lang], '}}<br><strong>',
+      txt["year.cat", lang], ': </strong>', '{{x}}<br><strong>',
       txt["language.cat", lang], ': </strong>{{Langue}}<br><strong>',
       txt['genre.cat', lang], ': </strong>{{series}}<br><strong>',
       txt['imdb.cat', lang], ": </strong>{{IMDB}}<br><strong>",
       txt["admissions.cat", lang], ": </strong>{{y}}<br><strong>",
-      txt["director.cat", lang], ": </strong>{{director}}</p></div><p>",
+      txt["director.cat", lang], ': </strong>{{director}}</p></div><p>',
       "{{synopsis}}",
-      '</p><p><div class="light">',
+      '</p><p><div class="light" align="center">',
       '<a href="{{url}}" target="_blank">', txt["trailer", lang], '</a>',
       '</p></div></div>
       </div>'
