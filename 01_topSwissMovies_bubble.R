@@ -68,8 +68,13 @@ for(lang in colnames(txt)) {
     '</table>')
 
   a <- Highcharts$new()
-  a$chart(zoomType = "xy", type = 'bubble', height = height,
-    spacing = 3, plotBackgroundImage = 'http://interactive.swissinfo.ch/2016_01_12_swissCinema/movie_test.jpg')
+  a$chart(
+    zoomType = "xy",
+    type = 'bubble',
+    height = height,
+    spacing = 3,
+    plotBackgroundImage = 'http://interactive.swissinfo.ch/2016_01_12_swissCinema/movie_test.jpg'
+  )
 
   h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name,
     series = dd$series, url = dd$url, bname = dd$title), "series")
@@ -88,7 +93,7 @@ for(lang in colnames(txt)) {
 
   a$colors(c("#3a9736", "#336666", "#333366", "#ab3d3f", "#666633", "#ac673e"))
 
-  a$legend(borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 4,
+  a$legend(useHTML = TRUE, borderWidth= 0, itemMarginTop = 3, itemMarginBottom = 4,
     title = list(style = list(fontWeight ='light'),
      text = paste0(txt['genre', lang],
       ' <span style="font-size: 8px; color: #666; font-weight: normal">',
