@@ -73,7 +73,7 @@ for(lang in colnames(txt)) {
     type = 'bubble',
     height = height,
     spacing = 3,
-    plotBackgroundImage = 'http://interactive.swissinfo.ch/2016_01_12_swissCinema/movie_test.jpg'
+    plotBackgroundImage = 'https://interactive.swissinfo.ch/2016_01_12_swissCinema/movie_test.jpg'
   )
 
   h2 <- hSeries2(data.frame(x = dd$x, y = dd$y, z = dd$z, name = dd$name,
@@ -123,7 +123,7 @@ for(lang in colnames(txt)) {
     h2 = txt['graphic.title', lang],
     descr = paste0(txt['graphic.subtitle', lang], "<br><br>"),
     h3 = "",
-    source = paste0(
+    source = paste0(txt['footnote', lang], " | ",
       txt['source', lang], ": ",
       htmlLink(txt['source.link', lang], txt['source.label', lang]), " & ",
       htmlLink(txt['source2.link', lang], txt['source2.label', lang])),
